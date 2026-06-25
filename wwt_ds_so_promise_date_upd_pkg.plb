@@ -1,4 +1,4 @@
-CREATE OR REPLACE PACKAGE BODY APPS.wwt_ds_so_promise_date_upd_pkg
+CREATE OR REPLACE PACKAGE BODY APPS.wwt_ds_so_promise_date_upd_pkg  
 AS
    -- CVS Header: $Source$, $Revision$, $Author$, $Date$
    --Github Header#
@@ -1382,5 +1382,23 @@ AS
                             || SQLERRM);
          wwt_runtime_utilities.flush_message_stack;
    END main;
+	
+		   PROCEDURE flush_debug_to_file
+   IS
+   BEGIN
+      IF g_debug
+      THEN
+
+         <<g_dbg_message_tab_loop>>
+         FOR i IN 1 .. g_dbg_message_tab.COUNT
+         LOOP
+            wwt_write_debug_log_pkg.write_log(p_debug_file_handle      => g_debug_file_handle
+                                             ,p_message                => g_dbg_message_tab(i));
+         END LOOP g_dbg_message_tab_loop;
+
+         UTL_FILE.fflush(FILE                     => g_debug_file_handle);
+         g_dbg_message_tab.DELETE;
+      END IF;
+   END flush_debug_to_file;
 END wwt_ds_so_promise_date_upd_pkg;
 /
